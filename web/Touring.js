@@ -3,6 +3,7 @@
 
 /* global google */
 var distance_output= new Array();
+var number;
 
 $(document).ready(function(){
     $("#searchno").on('input',function(){
@@ -19,7 +20,7 @@ $(document).ready(function(){
         
         map.fitBounds(defaultBounds);
 
-        var number = $("#searchno").val();
+        number = $("#searchno").val();
         var input= [];
         var searchBox= [];
         var count=10;
@@ -148,13 +149,13 @@ $(document).ready(function(){
                         return function(response, status){
                             if (status != google.maps.DistanceMatrixStatus.OK) 
                             {
-                                alert('Error was: ' + status);
+                                console.log('Error was: ' + status);
                             } 
                             else 
                             {
 //                              var org = response.originAddresses;
 //                              var des = response.destinationAddresses;
-                                distance_output[i][j]=response.rows[0].elements[0].distance.text;
+                                distance_output[i][j]=parseInt((response.rows[0].elements[0].distance.text).replace(/[a-z ]/g,''),10);
 //                              console.log(org + ' to ' + des
 //                                      + ': ' + response.rows[0].elements[0].distance.text); 
                                 if(i==number)
@@ -195,5 +196,86 @@ $(document).ready(function(){
             }
         }
    });
-});
    
+    $("#route").on('click',function(){
+		Object.size = function(obj) {
+		    var size = 0, key;
+		    for (key in obj) {
+		        if (obj.hasOwnProperty(key)) size++;
+		    }
+		    return size;
+		};
+		
+		Route = function() {
+                    nodes={};
+                    for(var i=1;i<=number;i++)
+                    {
+                        nodes[i]= new Node(i);
+                    }
+
+                    edges = {};
+                    for(var i=1;i<=number;i++)
+                    {
+                    for(var j=1;j<=number;j++)
+                        {
+                            this.distance(i,j);
+                        }
+                    }
+		};
+                
+                Route.prototype.distance = function(node1, node2) {
+			nodes[node1].edges[node2] = distance_output[node1][node2];
+		};
+
+		Route.prototype.optimal_route = function() {
+                    $('#path').empty();
+                    visited = {};
+                    visited_weight = 0;
+                    minimum_weight = Infinity;
+                    depth = 0;
+                    nodes_length = Object.size(nodes);
+                    h_cycle = [];
+                    initial_node = ($('#source')).val();
+		    this.heuristic_search(initial_node, undefined);
+		};
+		
+                Route.prototype.heuristic_search = function(n, p) {
+                    visited[n] = depth++;
+                    if (undefined != p)
+			visited_weight += nodes[p].edges[n];
+                    if (visited_weight < minimum_weight) {
+			this.check_hamilton_cycle(n);
+			for(t in nodes[n].edges)
+                            if(!(t in visited))
+				this.heuristic_search(t, n);
+                    }
+                    if (undefined != p)
+			visited_weight -= nodes[p].edges[n];
+                    depth--;
+                    delete visited[n];
+		};
+		
+                Route.prototype.check_hamilton_cycle = function(n) {
+                    if (depth == nodes_length) {
+			if (initial_node in nodes[n].edges) {
+                            var path = [];
+                            for(d in visited)
+				path[visited[d]] = d;
+                            h_cycle.push(path);
+                            minimum_weight = visited_weight;
+               		    $('#path').val('Path: '+(path.join(', '))+' length:'+visited_weight);
+                            console.log("Path: "+(path.join(', '))+' length:'+visited_weight);
+                        }
+                    }
+		}
+		
+                Node = function(name) {
+			this.name = name;
+			this.edges = {};
+		};
+                
+                route=new Route();
+                route.optimal_route();
+    });
+});
+

@@ -29,7 +29,37 @@
         width: 100px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       }
-     
+      
+      .controlsource {
+        position: fixed;
+        left: 20px;
+        top: 150px;
+        margin-top: 16px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        width: 100px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      
+      .controlpath {
+        position: fixed;
+        left: 20px;
+        top: 250px;
+        margin-top: 16px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        width: 200px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      
       #pac-input {
         background-color: #fff;
         font-family: Roboto;
@@ -70,6 +100,11 @@
     <div id="map-canvas" style="width:700px; height: 500px; position:fixed; top:50px; left:180px"></div>
     <div class="searchtext">
         <p>Enter number of places:</p></div>
-    <input id="searchno" class="controls" type="text" placeholder="seach number">
+    <input id="searchno" class="controls" type="text" placeholder="Number">
+    <div id="pathname" style="position:fixed; top:130px; left:20px">
+        <p>Enter Start Point:</p></div>
+    <input id="source" class="controlsource" type="text" placeholder="Source">
+    <input id="route" type="button" value="Find best route" style="position:fixed; top:240px; left:20px">
+    <input id="path" class="controlpath" type="text" placeholder="Optimal Path">
   </body>
 </html>
